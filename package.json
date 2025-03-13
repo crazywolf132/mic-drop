@@ -1,6 +1,6 @@
 {
   "name": "@foxycorps/mic-drop",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A modern, browser-compatible library for capturing microphone audio streams",
   "type": "module",
   "main": "dist/index.js",
