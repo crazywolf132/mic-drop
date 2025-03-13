@@ -1,9 +1,9 @@
-# 🎤 mic-drop
+# 🎤 @foxycorps/mic-drop
 
-[![NPM Version](https://img.shields.io/npm/v/mic-drop.svg)](https://www.npmjs.com/package/mic-drop)
+[![NPM Version](https://img.shields.io/npm/v/@foxycorps/mic-drop.svg)](https://www.npmjs.com/package/@foxycorps/mic-drop)
 [![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](https://opensource.org/licenses/ISC)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0%2B-blue)](https://www.typescriptlang.org/)
-[![Bundle Size](https://img.shields.io/bundlephobia/minzip/mic-drop)](https://bundlephobia.com/package/mic-drop)
+[![Bundle Size](https://img.shields.io/bundlephobia/minzip/@foxycorps/mic-drop)](https://bundlephobia.com/package/@foxycorps/mic-drop)
 
 **A straightforward library for capturing microphone audio in web apps**
 
@@ -11,7 +11,7 @@ Working with microphone input in the browser can be a real headache. This librar
 
 ## What is this?
 
-`mic-drop` helps you:
+`@foxycorps/mic-drop` helps you:
 - Capture audio from the user's microphone
 - Process real-time audio data
 - Build visualizations, voice features, or recording apps
@@ -23,9 +23,9 @@ All without having to become a Web Audio API expert.
 
 ```bash
 # Pick your favorite package manager
-npm install mic-drop
-pnpm add mic-drop
-yarn add mic-drop
+npm install @foxycorps/mic-drop
+pnpm add @foxycorps/mic-drop
+yarn add @foxycorps/mic-drop
 ```
 
 ## Quick Example
@@ -33,7 +33,7 @@ yarn add mic-drop
 Here's how to get started with basic recording:
 
 ```javascript
-import MicrophoneStream from 'mic-drop';
+import MicrophoneStream from '@foxycorps/mic-drop';
 
 async function startRecording() {
   try {
@@ -101,6 +101,9 @@ const mic = new MicrophoneStream({
 Here's a practical example of how to create a waveform visualizer:
 
 ```javascript
+import MicrophoneStream from '@foxycorps/mic-drop';
+
+const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 const mic = new MicrophoneStream({ stream });
 const canvas = document.getElementById('visualizer');
 const ctx = canvas.getContext('2d');
@@ -136,6 +139,8 @@ mic.addEventListener('data', (event) => {
 ### Creating an instance
 
 ```javascript
+import MicrophoneStream from '@foxycorps/mic-drop';
+
 // Basic usage
 const mic = new MicrophoneStream();
 

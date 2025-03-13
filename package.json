@@ -24,6 +24,14 @@
     "test:coverage": "vitest run --coverage",
     "typecheck": "tsc --noEmit"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/foxycorps/mic-drop.git"
+  },
+  "homepage": "https://github.com/foxycorps/mic-drop",
+  "bugs": {
+    "url": "https://github.com/foxycorps/mic-drop/issues"
+  },
   "keywords": [
     "microphone",
     "audio",

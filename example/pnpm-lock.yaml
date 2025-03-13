@@ -8,7 +8,7 @@ importers:
 
   .:
     dependencies:
-      mic-drop:
+      '@foxycorps/mic-drop':
         specifier: file:..
         version: file:..
       react:
@@ -241,6 +241,9 @@ packages:
   '@eslint/plugin-kit@0.2.7':
     resolution: {integrity: sha512-JubJ5B2pJ4k4yGxaNLdbjrnk9d/iDz6/q8wOilpIowd6PJPgaxCuHBnBszq7Ce2TyMrywm5r4PnKm6V3iiZF+g==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
+
+  '@foxycorps/mic-drop@file:..':
+    resolution: {directory: .., type: directory}
 
   '@humanfs/core@0.19.1':
     resolution: {integrity: sha512-5DyQ4+1JEUzejeK1JGICcideyfUbGixgS9jNgex5nqkW+cY7WZhxBigmieN5Qnw9ZosSNVC9KQKyb+GUaGyKUA==}
@@ -763,9 +766,6 @@ packages:
     resolution: {integrity: sha512-8q7VEgMJW4J8tcfVPy8g09NcQwZdbwFEqhe/WZkoIzjn/3TGDwtOCYtXGxA3O8tPzpczCCDgv+P2P5y00ZJOOg==}
     engines: {node: '>= 8'}
 
-  mic-drop@file:..:
-    resolution: {directory: .., type: directory}
-
   micromatch@4.0.8:
     resolution: {integrity: sha512-PXwfBhYu0hBCPw8Dn0E+WDYb7af3dSLVWKi3HGv84IdF4TyFoC0ysxFd0Goxw7nSv4T/PzEJQxsYsEiFCKo2BA==}
     engines: {node: '>=8.6'}
@@ -1089,6 +1089,8 @@ snapshots:
     dependencies:
       '@eslint/core': 0.12.0
       levn: 0.4.1
+
+  '@foxycorps/mic-drop@file:..': {}
 
   '@humanfs/core@0.19.1': {}
 
@@ -1590,8 +1592,6 @@ snapshots:
   lodash.merge@4.6.2: {}
 
   merge2@1.4.1: {}
-
-  mic-drop@file:..: {}
 
   micromatch@4.0.8:
     dependencies:

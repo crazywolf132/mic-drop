@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
-import MicrophoneStream from 'mic-drop'
+import MicrophoneStream from '@foxycorps/mic-drop'
 import './App.css'
 
 function App() {
@@ -471,7 +471,7 @@ function App() {
   return (
     <div className="app-container">
       <header>
-        <h1>🎤 Mic-Drop Demo</h1>
+        <h1>🎤 @foxycorps/mic-drop Demo</h1>
         <p>A modern browser microphone audio stream library</p>
       </header>
 
@@ -587,7 +587,7 @@ function App() {
 
       <footer>
         <p>
-          Check out the <a href="https://github.com/yourusername/mic-drop" target="_blank" rel="noopener noreferrer">GitHub repository</a> for more information
+          Check out the <a href="https://github.com/foxycorps/mic-drop" target="_blank" rel="noopener noreferrer">GitHub repository</a> for more information
         </p>
       </footer>
     </div>

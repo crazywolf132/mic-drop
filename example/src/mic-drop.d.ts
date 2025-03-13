@@ -1,4 +1,4 @@
-declare module 'mic-drop' {
+declare module '@foxycorps/mic-drop' {
   export type AudioFormat = {
     channels: number;
     bitDepth: number;
