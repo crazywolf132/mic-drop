@@ -1,287 +1,219 @@
-# 🎤 Mic-Drop
+# 🎤 mic-drop
 
 [![NPM Version](https://img.shields.io/npm/v/mic-drop.svg)](https://www.npmjs.com/package/mic-drop)
 [![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](https://opensource.org/licenses/ISC)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0%2B-blue)](https://www.typescriptlang.org/)
 [![Bundle Size](https://img.shields.io/bundlephobia/minzip/mic-drop)](https://bundlephobia.com/package/mic-drop)
 
-**A modern, browser-compatible library for capturing microphone audio in web applications**
+**A straightforward library for capturing microphone audio in web apps**
 
-Mic-Drop provides a simple, powerful interface for accessing microphone input and processing audio data in real-time. Built with modern web standards and full TypeScript support.
+Working with microphone input in the browser can be a real headache. This library simplifies that, giving you an easy way to capture and process audio data without all the Web Audio API complexity.
 
-<p align="center">
-  <img src="https://user-images.githubusercontent.com/put-your-image-url-here/mic-drop-banner.png" alt="Mic-Drop Banner" width="600">
-</p>
+## What is this?
 
-## ✨ Features
+`mic-drop` helps you:
+- Capture audio from the user's microphone
+- Process real-time audio data
+- Build visualizations, voice features, or recording apps
+- Work around browser quirks (especially Safari and iOS)
 
-- **💪 Modern API** - Uses EventTarget instead of Node.js streams for better browser compatibility
-- **🔄 Browser Compatible** - Works across Chrome, Firefox, Safari, Edge, and mobile browsers
-- **🎧 Advanced Audio Processing** - Uses cutting-edge AudioWorklet API with fallback to ScriptProcessorNode
-- **📱 iOS Support** - Specially designed for iOS compatibility 
-- **🧩 Framework Agnostic** - Works with any bundler (Webpack, Vite, Rollup) or directly in browsers
-- **🔊 Flexible Output** - Handle audio data as raw Float32Arrays or AudioBuffers
-- **📊 TypeScript Support** - Full type definitions and type safety
-- **🧪 Thoroughly Tested** - Comprehensive test suite ensures reliability
-- **🪶 Lightweight** - Small footprint with zero dependencies
+All without having to become a Web Audio API expert.
 
-## 📦 Installation
+## Install
 
 ```bash
-# Using npm
+# Pick your favorite package manager
 npm install mic-drop
-
-# Using yarn
-yarn add mic-drop
-
-# Using pnpm
 pnpm add mic-drop
+yarn add mic-drop
 ```
 
-## 🚀 Quick Start
+## Quick Example
 
-```typescript
+Here's how to get started with basic recording:
+
+```javascript
 import MicrophoneStream from 'mic-drop';
 
-// Request access to the microphone
-navigator.mediaDevices.getUserMedia({ audio: true })
-  .then(stream => {
-    // Create a new MicrophoneStream instance
-    const micStream = new MicrophoneStream({ stream });
+async function startRecording() {
+  try {
+    // Get access to the microphone
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    
+    // Create a new instance
+    const mic = new MicrophoneStream({ stream });
     
     // Listen for audio data
-    micStream.addEventListener('data', (event) => {
-      const audioData = event.detail; // Float32Array by default
-      console.log('Received audio data:', audioData.length);
+    mic.addEventListener('data', (event) => {
+      const audioData = event.detail; // This is a Float32Array
       
-      // Do something with the audio data here...
+      // Do something with the audio data:
+      // - Visualize it
+      // - Analyze it
+      // - Send it to a server
+      // - Save it locally
     });
     
-    // Stop recording after 5 seconds
-    setTimeout(() => {
-      micStream.stop();
-    }, 5000);
-  })
-  .catch(err => {
-    console.error('Error accessing microphone:', err);
-  });
-```
-
-## 📚 Usage Examples
-
-### Using Object Mode (AudioBuffer)
-
-```typescript
-const micStream = new MicrophoneStream({
-  stream,
-  objectMode: true // Emit AudioBuffer objects instead of Float32Arrays
-});
-
-micStream.addEventListener('data', (event) => {
-  const audioBuffer = event.detail; // AudioBuffer
-  
-  // Get specific channel data
-  const leftChannel = audioBuffer.getChannelData(0);
-  
-  console.log('Received AudioBuffer with duration:', audioBuffer.duration);
-  
-  // AudioBuffer provides useful methods for audio processing
-});
-```
-
-### iOS Compatibility
-
-```typescript
-// Create instance BEFORE user interaction
-const micStream = new MicrophoneStream();
-
-// In response to user interaction (like a button click)
-startRecordButton.addEventListener('click', async () => {
-  try {
-    // Get media stream AFTER user interaction for iOS compatibility
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    await micStream.setStream(stream);
-    
-    // Now the stream is connected and recording
-    recordingStatus.textContent = 'Recording...';
+    return mic; // Keep a reference to stop it later
   } catch (err) {
-    console.error('Error accessing microphone:', err);
+    console.error('Could not access microphone:', err);
   }
-});
+}
 
-// Stop recording when the stop button is clicked
-stopRecordButton.addEventListener('click', () => {
-  micStream.stop();
-  recordingStatus.textContent = 'Recording stopped';
+// To stop recording
+function stopRecording(mic) {
+  if (mic) {
+    mic.stop();
+  }
+}
+```
+
+## Working with iOS/Safari
+
+iOS is notoriously picky about audio. Here's a pattern that works well:
+
+```javascript
+// Create the instance BEFORE any user interaction
+const mic = new MicrophoneStream();
+
+// Then in response to a button click:
+recordButton.addEventListener('click', async () => {
+  const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  await mic.setStream(stream); // Now we're recording!
 });
 ```
 
-### Pausing and Resuming
+## Avoid Deprecated APIs
 
-```typescript
-// Pause recording temporarily
-pauseButton.addEventListener('click', () => {
-  micStream.pauseRecording();
-  recordingStatus.textContent = 'Paused';
+Use the `allowScriptProcessorFallback` option to prevent falling back to deprecated APIs:
+
+```javascript
+// Modern browsers only - safer for the future
+const mic = new MicrophoneStream({
+  allowScriptProcessorFallback: false
 });
 
-// Resume recording
-resumeButton.addEventListener('click', () => {
-  micStream.resumeRecording();
-  recordingStatus.textContent = 'Recording...';
-});
+// Will throw an error rather than use deprecated APIs
 ```
 
-### Visualizing Audio Data
+## Building a Simple Visualizer
 
-```typescript
+Here's a practical example of how to create a waveform visualizer:
+
+```javascript
+const mic = new MicrophoneStream({ stream });
 const canvas = document.getElementById('visualizer');
-const canvasCtx = canvas.getContext('2d');
+const ctx = canvas.getContext('2d');
 
-micStream.addEventListener('data', (event) => {
+mic.addEventListener('data', (event) => {
   const audioData = event.detail;
   
-  // Clear the canvas
-  canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
+  // Clear canvas
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
   
-  // Draw the waveform
-  canvasCtx.beginPath();
+  // Draw waveform
+  ctx.beginPath();
+  ctx.strokeStyle = '#0077ff';
+  ctx.lineWidth = 2;
+  
   const sliceWidth = canvas.width / audioData.length;
   let x = 0;
   
   for (let i = 0; i < audioData.length; i++) {
-    const v = audioData[i] * 0.5 + 0.5; // Convert to range 0-1
-    const y = v * canvas.height;
+    // Convert audio data to y-position (0 to canvas height)
+    const y = (audioData[i] * 0.5 + 0.5) * canvas.height;
     
-    if (i === 0) {
-      canvasCtx.moveTo(x, y);
-    } else {
-      canvasCtx.lineTo(x, y);
-    }
-    
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
     x += sliceWidth;
   }
   
-  canvasCtx.lineTo(canvas.width, canvas.height / 2);
-  canvasCtx.stroke();
+  ctx.stroke();
 });
 ```
 
-## 📋 API Reference
+## API Overview
 
-### `MicrophoneStream`
+### Creating an instance
 
-#### Constructor
+```javascript
+// Basic usage
+const mic = new MicrophoneStream();
 
-```typescript
-constructor(options?: MicrophoneStreamOptions)
+// With options
+const mic = new MicrophoneStream({
+  stream: mediaStream,       // MediaStream from getUserMedia
+  objectMode: false,         // true for AudioBuffer, false for Float32Array
+  bufferSize: 4096,          // Buffer size (256 to 16384, power of 2)
+  context: audioContext,     // Custom AudioContext (optional)
+  allowScriptProcessorFallback: true // Set to false for modern browsers only
+});
 ```
 
-#### Options
+### Methods
 
-```typescript
-interface MicrophoneStreamOptions {
-  // The MediaStream from getUserMedia (optional)
-  stream?: MediaStream;
-  
-  // Whether to emit AudioBuffers (true) or Float32Arrays (false)
-  objectMode?: boolean; // default: false
-  
-  // Buffer size for audio processing (power of 2)
-  // Valid values: 256, 512, 1024, 2048, 4096, 8192, 16384
-  bufferSize?: number; // default: 4096
-  
-  // Custom AudioContext to use
-  context?: AudioContext; // default: new AudioContext()
-}
+- **setStream(stream)**: Connect to a microphone stream
+- **pauseRecording()**: Pause data collection temporarily
+- **resumeRecording()**: Resume after pausing
+- **stop()**: Stop recording but keep the instance for later use
+- **destroy()**: Completely clean up resources when done
+
+### Events
+
+```javascript
+// Audio data event
+mic.addEventListener('data', (event) => {
+  const audioData = event.detail; // Float32Array or AudioBuffer
+});
+
+// Format information
+mic.addEventListener('format', (event) => {
+  const format = event.detail;
+  console.log(`Sample rate: ${format.sampleRate}Hz`);
+});
+
+// Error handling
+mic.addEventListener('error', (event) => {
+  console.error('Microphone error:', event.error);
+});
 ```
 
-#### Methods
+## Tips for Better Performance
 
-| Method | Description |
-|--------|-------------|
-| `setStream(stream: MediaStream): Promise<void>` | Set the MediaStream to record from |
-| `pauseRecording(): void` | Temporarily pause recording |
-| `resumeRecording(): void` | Resume recording after pausing |
-| `stop(): void` | Stop recording and clean up resources |
-| `addEventListener(type, listener, options?)` | Add an event listener |
-| `removeEventListener(type, listener, options?)` | Remove an event listener |
+- **Buffer Size**: Smaller = lower latency but higher CPU usage. Default 4096 works well for most cases
+- **Audio Processing**: Do heavy processing in a Web Worker if possible
+- **Memory Usage**: Remove event listeners when done to prevent memory leaks
+- **Mobile Devices**: Be mindful of battery usage with long-running audio processing
 
-#### Static Methods
+## Browser Support
 
-| Method | Description |
-|--------|-------------|
-| `toAudioBuffer(raw: Float32Array, sampleRate: number): AudioBuffer` | Convert a Float32Array to an AudioBuffer |
+Works in all modern browsers:
+- Chrome 55+
+- Firefox 52+
+- Safari 14.1+
+- Edge 79+
+- iOS Safari 14.5+
 
-#### Events
+## Troubleshooting Common Issues
 
-| Event | Detail Type | Description |
-|-------|-------------|-------------|
-| `data` | `Float32Array \| AudioBuffer` | Emitted when new audio data is available |
-| `format` | `AudioFormat` | Emitted with format information |
-| `close` | - | Emitted when recording is stopped |
-| `error` | `Error` | Emitted when an error occurs |
+- **No audio data?** Check that your microphone permissions are granted
+- **Browser errors?** Try using `allowScriptProcessorFallback: false` and handle errors
+- **iOS not working?** Make sure you create the instance before user interaction
+- **High CPU usage?** Try increasing the buffer size
 
-#### AudioFormat Object
+## Contributing
 
-```typescript
-interface AudioFormat {
-  channels: number;    // Number of audio channels
-  bitDepth: number;    // Bit depth (32 for Float32Array)
-  sampleRate: number;  // Sample rate in Hz (e.g., 44100)
-  signed: boolean;     // Whether values are signed
-  float: boolean;      // Whether values are floating point
-}
-```
+Found a bug or want to help? Contributions are welcome!
 
-## 🔧 Browser Compatibility
+1. Fork the repo
+2. Create your branch (`git checkout -b fix/awesome-fix`)
+3. Make your changes
+4. Test your changes
+5. Submit a pull request
 
-| Browser | Minimum Version |
-|---------|-----------------|
-| Chrome | 55+ |
-| Firefox | 52+ |
-| Safari | 14.1+ |
-| Edge | 79+ |
-| iOS Safari | 14.5+ |
-| Android Chrome | 55+ |
+## License
 
-## 🧪 Testing
+ISC License - go wild, just keep the attribution.
 
-To run tests locally:
+## Credit Where It's Due
 
-```bash
-# Run tests once
-npm test
-
-# Run tests with watch mode
-npm run test:watch
-
-# Run tests with coverage
-npm run test:coverage
-```
-
-## 📈 Performance Considerations
-
-- The default buffer size (4096) provides a good balance between latency and performance
-- Smaller buffer sizes provide lower latency but higher CPU usage
-- For real-time applications like voice recognition, consider using smaller buffer sizes
-- For audio recording or analysis, larger buffer sizes are more efficient
-
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## 📝 License
-
-This project is licensed under the ISC License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgements
-
-- Inspired by the [microphone-stream](https://github.com/AshcroftTwelve/microphone-stream) package
-- Special thanks to the Web Audio API working group 
+Built on the shoulders of the Web Audio API and inspired by earlier microphone libraries. 
